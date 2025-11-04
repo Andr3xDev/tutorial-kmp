@@ -15,6 +15,7 @@ import com.jetbrains.kmpapp.screens.detail.DetailScreen
 import com.jetbrains.kmpapp.screens.list.ListScreen
 import kotlinx.serialization.Serializable
 
+// TODO: Define navigation destinations (use @Serializable)
 @Serializable
 object ListDestination
 
@@ -28,12 +29,17 @@ fun App() {
     ) {
         Surface {
             val navController: NavHostController = rememberNavController()
+
+            // TODO: Configure NavHost with routes
             NavHost(navController = navController, startDestination = ListDestination) {
                 composable<ListDestination> {
-                    ListScreen(navigateToDetails = { objectId ->
-                        navController.navigate(DetailDestination(objectId))
-                    })
+                    ListScreen(
+                        navigateToDetails = { objectId ->
+                            navController.navigate(DetailDestination(objectId))
+                        }
+                    )
                 }
+
                 composable<DetailDestination> { backStackEntry ->
                     DetailScreen(
                         objectId = backStackEntry.toRoute<DetailDestination>().objectId,

@@ -47,46 +47,34 @@ import com.jetbrains.kmpapp.data.RickAndMortyCharacter
 import com.jetbrains.kmpapp.screens.EmptyScreenContent
 import org.koin.compose.viewmodel.koinViewModel
 
-/**
- * Main composable for the character detail screen
- * Displays detailed information about a single Rick & Morty character
- *
- * @param objectId The ID of the character to display
- * @param navigateBack Callback to navigate back to the previous screen
- */
+// TODO PARTE 1: Implementa la UI para mostrar detalles del personaje
+
 @Composable
 fun DetailScreen(
     objectId: Int,
     navigateBack: () -> Unit,
 ) {
-    // Get ViewModel instance from Koin DI
+    // TODO: Obtén el ViewModel
     val viewModel = koinViewModel<DetailViewModel>()
 
-    // Collect StateFlow as Compose State (automatically updates UI on changes)
+    // TODO: Observa los StateFlow
     val character by viewModel.character.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
-    // LaunchedEffect runs when the composable enters composition or when objectId changes
-    // This is the right place for side effects like loading data
+    // TODO: Usa LaunchedEffect para cargar datos cuando objectId cambia
     LaunchedEffect(objectId) {
         viewModel.loadCharacter(objectId)
     }
 
-    // Box allows stacking composables (content + loading indicator)
     Box(modifier = Modifier.fillMaxSize()) {
-        // AnimatedContent provides smooth transition between loading/loaded states
         AnimatedContent(character != null) { characterAvailable ->
             if (characterAvailable) {
-                // Show character details when data is loaded
-                // !! is safe here because we checked character != null
                 CharacterDetails(character!!, onBackClick = navigateBack)
             } else if (!isLoading) {
-                // Show empty state when not loading and no data
                 EmptyScreenContent(Modifier.fillMaxSize())
             }
         }
 
-        // Show loading indicator centered on top of everything when loading
         if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
@@ -95,50 +83,43 @@ fun DetailScreen(
     }
 }
 
-/**
- * Detailed view of a character with all information
- * Uses Scaffold for Material Design layout with TopAppBar
- *
- * @param character The character data to display
- * @param onBackClick Callback to navigate back
- * @param modifier Optional modifier for customization
- */
 @Composable
 private fun CharacterDetails(
     character: RickAndMortyCharacter,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Scaffold provides Material Design structure (TopBar + Content)
+    // TODO: Usa Scaffold con TopAppBar
     Scaffold(
         topBar = {
             @OptIn(ExperimentalMaterial3Api::class)
             TopAppBar(
                 title = { Text(character.name) },
                 navigationIcon = {
-                    // Back button in the top bar
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 }
             )
         },
-        // Handle system bars (status bar, navigation bar)
         modifier = modifier.windowInsetsPadding(WindowInsets.systemBars),
     ) { paddingValues ->
-        // Column with vertical scroll for all content
+        // TODO: Column scrollable con imagen + info cards
         Column(
             Modifier
-                .verticalScroll(rememberScrollState()) // Enable scrolling
-                .padding(paddingValues) // Respect Scaffold padding
+                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            // Large circular character image at the top
+            // TODO: Box con AsyncImage grande y circular
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(400.dp)
-                    .background(Color.LightGray), // Background while image loads
+                    .background(Color.LightGray),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -147,15 +128,14 @@ private fun CharacterDetails(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(300.dp)
-                        .clip(CircleShape) // Make image circular
+                        .clip(CircleShape)
                 )
             }
 
             Spacer(Modifier.height(16.dp))
 
-            // All character information organized in cards
+            // TODO: Column con InfoCards mostrando toda la información
             Column(Modifier.padding(16.dp)) {
-                // Character name as main title
                 Text(
                     text = character.name,
                     style = MaterialTheme.typography.headlineLarge,
@@ -164,20 +144,20 @@ private fun CharacterDetails(
 
                 Spacer(Modifier.height(16.dp))
 
-                // Status card with dynamic color based on alive/dead status
+                // TODO: InfoCard para Status con color dinámico
                 InfoCard(
                     title = "Status",
                     value = character.status,
                     color = when (character.status.lowercase()) {
-                        "alive" -> Color(0xFF4CAF50)  // Green
-                        "dead" -> Color(0xFFF44336)   // Red
-                        else -> Color.Gray             // Gray for unknown
+                        "alive" -> Color(0xFF4CAF50)
+                        "dead" -> Color(0xFFF44336)
+                        else -> Color.Gray
                     }
                 )
 
                 Spacer(Modifier.height(12.dp))
 
-                // Species and Gender side by side in a Row
+                // TODO: Row con dos InfoCards (Species y Gender)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -185,16 +165,16 @@ private fun CharacterDetails(
                     InfoCard(
                         title = "Species",
                         value = character.species,
-                        modifier = Modifier.weight(1f) // Take equal space
+                        modifier = Modifier.weight(1f)
                     )
                     InfoCard(
                         title = "Gender",
                         value = character.gender,
-                        modifier = Modifier.weight(1f) // Take equal space
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
-                // Only show Type card if character has a type
+                // TODO: InfoCard condicional para Type (solo si no está vacío)
                 if (character.type.isNotEmpty()) {
                     Spacer(Modifier.height(12.dp))
                     InfoCard(title = "Type", value = character.type)
@@ -202,7 +182,6 @@ private fun CharacterDetails(
 
                 Spacer(Modifier.height(12.dp))
 
-                // Origin location
                 InfoCard(
                     title = "Origin",
                     value = character.origin.name
@@ -210,7 +189,6 @@ private fun CharacterDetails(
 
                 Spacer(Modifier.height(12.dp))
 
-                // Current/last known location
                 InfoCard(
                     title = "Last Location",
                     value = character.location.name
@@ -218,7 +196,6 @@ private fun CharacterDetails(
 
                 Spacer(Modifier.height(12.dp))
 
-                // Number of episode appearances
                 InfoCard(
                     title = "Episodes",
                     value = "${character.episode.size} appearances"
@@ -228,15 +205,7 @@ private fun CharacterDetails(
     }
 }
 
-/**
- * Reusable card component for displaying labeled information
- * Used throughout the detail screen for consistent styling
- *
- * @param title The label/title of the information
- * @param value The actual value to display
- * @param modifier Optional modifier for customization
- * @param color Optional color for the value text (e.g., status color)
- */
+// TODO PARTE 1: Componente reutilizable InfoCard
 @Composable
 private fun InfoCard(
     title: String,
@@ -244,7 +213,6 @@ private fun InfoCard(
     modifier: Modifier = Modifier,
     color: Color? = null
 ) {
-    // Material3 Card with subtle elevation
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -253,21 +221,19 @@ private fun InfoCard(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Title/label in gray, smaller text
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.Gray
             )
             Spacer(Modifier.height(4.dp))
-            // Value in larger text, optionally colored
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                // Use provided color or default theme color
                 color = color ?: MaterialTheme.colorScheme.onSurface
             )
         }
     }
 }
+

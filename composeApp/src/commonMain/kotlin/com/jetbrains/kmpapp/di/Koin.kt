@@ -13,55 +13,32 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-/**
- * Koin module for data layer dependencies
- * Provides singleton instances of HTTP client, API, and repository
- */
-val dataModule = module {
-    // Provide a singleton HttpClient configured for JSON
-    single {
-        // Configure JSON to ignore unknown keys (API might have extra fields)
-        val json = Json { ignoreUnknownKeys = true }
+// TODO PARTE 2: Configura los módulos de Koin
 
-        // Create HttpClient with content negotiation for JSON
+val dataModule = module {
+    // TODO: Define HttpClient como single con ContentNegotiation
+    single {
+        val json = Json { ignoreUnknownKeys = true }
         HttpClient {
             install(ContentNegotiation) {
-                // Configure JSON serialization/deserialization
                 json(json, contentType = ContentType.Application.Json)
             }
         }
     }
 
-    // Provide singleton instance of RickAndMortyApi
-    // get() automatically resolves HttpClient dependency
+    // TODO: Define Api y Repository como single
     single { RickAndMortyApi(get()) }
-
-    // Provide singleton instance of RickAndMortyRepository
-    // get() automatically resolves RickAndMortyApi dependency
     single { RickAndMortyRepository(get()) }
 }
 
-/**
- * Koin module for ViewModel dependencies
- * ViewModels are created as factories (new instance each time)
- */
 val viewModelModule = module {
-    // Factory for ListViewModel - creates new instance when requested
+    // TODO: Define ViewModels como factory
     factoryOf(::ListViewModel)
-
-    // Factory for DetailViewModel - creates new instance when requested
     factoryOf(::DetailViewModel)
 }
 
-/**
- * Initialize Koin dependency injection
- * Should be called once at app startup
- */
 fun initKoin() {
     startKoin {
-        modules(
-            dataModule,      // Register data layer dependencies
-            viewModelModule, // Register ViewModel dependencies
-        )
+        modules(dataModule, viewModelModule)
     }
 }

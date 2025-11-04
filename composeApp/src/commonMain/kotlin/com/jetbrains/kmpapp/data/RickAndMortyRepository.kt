@@ -1,48 +1,34 @@
 package com.jetbrains.kmpapp.data
 
-/**
- * Repository that abstracts the data source for Rick & Morty characters
- * Provides a clean API for ViewModels to fetch character data
- * Handles error cases and data transformation
- */
+// PARTE 2: Implementar Repository con manejo de errores
+// Objetivo: usar la API y manejar excepciones para retornar datos seguros
 class RickAndMortyRepository(private val api: RickAndMortyApi) {
 
-    /**
-     * Fetches a list of characters, limited to 15 items
-     * @return List of RickAndMortyCharacter objects, or empty list on error
-     */
+    // TODO: Implementa esta función para obtener la lista de personajes
+    // Debe: llamar api.getCharacters(), manejar errores con try/catch, limitar a 15 items
     suspend fun getCharacters(): List<RickAndMortyCharacter> {
-        return try {
-            // Call the API to get the first page of characters
-            val response = api.getCharacters(page = 1)
-
-            // Take only the first 15 characters from the results
-            response.results.take(15)
-        } catch (e: Exception) {
-            // Log error for debugging
-            e.printStackTrace()
-
-            // Return empty list instead of crashing the app
-            emptyList()
-        }
+        // Reemplaza este return emptyList() con:
+        // return try {
+        //     val response = api.getCharacters(page = 1)
+        //     response?.results?.take(15) ?: emptyList()
+        // } catch (e: Exception) {
+        //     e.printStackTrace()
+        //     emptyList()
+        // }
+        return emptyList()
     }
 
-    /**
-     * Fetches a single character by ID
-     * @param id The character ID to fetch
-     * @return RickAndMortyCharacter object, or null if not found or error occurs
-     */
+    // TODO: Implementa esta función para obtener un personaje por ID
+    // Debe: llamar api.getCharacterById(id), manejar errores, retornar null si falla
     suspend fun getCharacterById(id: Int): RickAndMortyCharacter? {
-        return try {
-            // Call the API to get the specific character
-            api.getCharacterById(id)
-        } catch (e: Exception) {
-            // Log error for debugging
-            e.printStackTrace()
-
-            // Return null instead of crashing the app
-            null
-        }
+        // Reemplaza este return null con:
+        // return try {
+        //     api.getCharacterById(id)
+        // } catch (e: Exception) {
+        //     e.printStackTrace()
+        //     null
+        // }
+        return null
     }
 }
 

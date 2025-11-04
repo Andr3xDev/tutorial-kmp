@@ -9,38 +9,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for the character detail screen
- * Manages the state and business logic for displaying a single character's details
- */
+// TODO PARTE 2: Implementa DetailViewModel (similar a ListViewModel)
 class DetailViewModel(private val rickAndMortyRepository: RickAndMortyRepository) : ViewModel() {
-    // Private mutable state for the character - nullable because it may not be loaded yet
+
+    // TODO: Define StateFlow para character (nullable)
     private val _character = MutableStateFlow<RickAndMortyCharacter?>(null)
-    // Public read-only state that UI can observe
     val character: StateFlow<RickAndMortyCharacter?> = _character.asStateFlow()
 
-    // Private mutable state for loading indicator
+    // TODO: Define StateFlow para isLoading
     private val _isLoading = MutableStateFlow(false)
-    // Public read-only state for loading status
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    /**
-     * Loads a specific character by ID from the repository
-     * @param characterId The ID of the character to load
-     */
+    // TODO: Implementa loadCharacter(id) - NO se llama en init, recibe parámetro
     fun loadCharacter(characterId: Int) {
-        // Launch a coroutine in the ViewModel scope (lifecycle-aware)
         viewModelScope.launch {
-            // Show loading indicator
             _isLoading.value = true
-
-            // Fetch character from repository (suspend function, runs asynchronously)
             val result = rickAndMortyRepository.getCharacterById(characterId)
-
-            // Update the character state with fetched data (may be null if not found)
             _character.value = result
-
-            // Hide loading indicator
             _isLoading.value = false
         }
     }
